@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">CastApp MVP</string>
+    <string name="app_id">4F8B3483</string>
+    <string name="no_device_error">Connect To Chrome Cast</string>
+</resources>
