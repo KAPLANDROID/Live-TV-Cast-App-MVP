@@ -9,6 +9,7 @@ import com.google.android.gms.cast.MediaLoadOptions
 import com.google.android.gms.cast.MediaMetadata
 import com.google.android.gms.cast.framework.*
 import com.google.android.gms.common.images.WebImage
+import com.kaplandroid.castappmvp.BuildConfig
 import com.kaplandroid.castappmvp.db.TvChannelListDB
 import com.kaplandroid.castappmvp.model.TvChannel
 import java.util.*
@@ -41,7 +42,7 @@ class CastManager(context: Context, private val castManagerContract: CastManager
                 MediaMetadata.KEY_SUBTITLE,
                 Calendar.getInstance().time.toString()
             )
-            movieMetadata.addImage(WebImage(Uri.parse("http://www.kaplandroid.com/kplndrd.png")))
+            movieMetadata.addImage(WebImage(Uri.parse(BuildConfig.logoUrl)))
 
             val mediaInfo = MediaInfo.Builder(channel.getStreamLink())
                 .setStreamType(MediaInfo.STREAM_TYPE_LIVE)

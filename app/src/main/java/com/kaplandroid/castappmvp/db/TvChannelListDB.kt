@@ -11,7 +11,7 @@ object TvChannelListDB {
     var token = ""
     var tms = ""
 
-    var channelList = arrayOf(
+    var channelList = arrayListOf(
         TvChannel("Kafa Radyo", "kafaradyo", "http://46.20.3.245/stream/510/"),
         TvChannel("Trt 1", "trt1"),
         TvChannel(
@@ -31,7 +31,8 @@ object TvChannelListDB {
         TvChannel(
             "ATV",
             "atv",
-            "https://trkvz-live.ercdn.net/atvhd/atvhd.m3u8?st=Mx1GJiXOz575i3a6e1BlIw&e=1564887572"
+            "https://blutv-beta.akamaized.net/atvhd/atvhd.smil/playlist.m3u8"
+//            "https://trkvz-m.ercdn.net/trkvz-temp/atvhdm.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9NS8xMi8yMDE4IDEwOjExOjA2IFBNJmhhc2hfdmFsdWU9cGtzUElvZjBwOUFIcDZRenpxQmxLdz09JnZhbGlkbWludXRlcz01"
         ),
         TvChannel("DMAX Türkiye", "ntvspor"),
         TvChannel(
@@ -46,14 +47,14 @@ object TvChannelListDB {
         ), //new TvChannel("CNN Türk2", "cnnturk2","https://live.dogannet.tv/S1/HLS_LIVE/cnn_turk/1000/prog_index.m3u8"),
         TvChannel("TLC TV", "tlctv"),
         TvChannel("360 TV", "skyturk"),
-        TvChannel("TV 8,5", "tv8-buc-03"),
+        TvChannel("TV 8,5", "kanal8b"),
         TvChannel(
             "TRT World",
             "trtworld",
             "https://trtcanlitv-lh.akamaihd.net/i/TRTWORLD_1@321783/index_360p_av-p.m3u8?sd=10&rebase=on"
         ),
         TvChannel("Akıllı TV", "akillitv"),
-        TvChannel("Halk Tv", "hd-halk-tv"),
+        TvChannel("Halk Tv", "halktv"),
         TvChannel("Bloomberg HT", "bloomberght"),
         TvChannel("Cartoon Network Türkiye", "cartoonnetwork"),
         TvChannel("Haber Global", "haberglobal"),
@@ -87,31 +88,38 @@ object TvChannelListDB {
         TvChannel("TGRT EU", "tgrteu")
     )
 
+    var lastUpdateTime = 0L
+
     fun updateTokens() {
+        // 30 minutes cache for token (in milli seconds: 30 * 60 * 1000)
+        if (System.currentTimeMillis() - lastUpdateTime > 30 * 60 * 1000) {
+            val tokenRefreshUrl =
+                "http://web.canlitvlive.io/tvizle.php?tv=ntv-spor-izle"
 
-        val url1 =
-            "http://web.canlitvlive.io/tvizle.php?css=eyJ6ZW1pbiI6IiMxQTFBMUEiLCJub3JlbmsiOiIjNEE4Q0I4Iiwib25pemxlIjoiMSIsImFkcmVuayI6IiNCMEQ1RTciLCJrYXRlZ29yaSI6InVuZGVmaW5lZCIsImFyYW1hdmFyIjoiMSIsImFkaG92ZXIiOiIjZmZmZmZmIiwiYWRyZW5rc2VjIjoiI0ZGRkZGRiJ9&t=2&pos=r&tv=ntv-spor-izle"
+            val client = OkHttpClient()
 
-        val client = OkHttpClient()
+            val request = Request.Builder()
+                .url(tokenRefreshUrl)
+                .build()
 
-        val request = Request.Builder()
-            .url(url1)
-            .build()
+            try {
+                val response = client.newCall(request).execute()
+                val res = response.body()?.string()
 
-        try {
-            val response = client.newCall(request).execute()
-            val res = response.body()?.string()
+                res?.let {
+                    token = it.split("tkn=")[1].split("&tms=")[0]
+                    tms = it.split("&tms=")[1].substring(0, 10)
 
-            res?.let {
-                token = it.split("tkn=")[1].split("&tms=")[0]
-                tms = it.split("&tms=")[1].substring(0, 10)
+                    lastUpdateTime = System.currentTimeMillis()
 
-                Log.e("res", "token:$token - tms:$tms")
+                    Log.e("res", "token:$token - tms:$tms - lastUpdateTime:$lastUpdateTime")
+                }
+
+            } catch (e: IOException) {
+                e.printStackTrace()
             }
-
-        } catch (e: IOException) {
-            e.printStackTrace()
+        }else{
+            Log.e("Token Refresh", "Token is up-to-date")
         }
-
     }
 }

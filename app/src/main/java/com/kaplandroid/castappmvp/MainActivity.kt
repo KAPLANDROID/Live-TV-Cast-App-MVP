@@ -12,7 +12,6 @@ import butterknife.BindView
 import butterknife.ButterKnife
 import com.google.android.gms.cast.framework.CastButtonFactory
 import com.google.android.gms.cast.framework.IntroductoryOverlay
-import com.kaplandroid.castappmvp.db.TvChannelListDB
 import com.kaplandroid.castappmvp.model.TvChannel
 
 class MainActivity : AppCompatActivity(), MainActivityContract.View {
@@ -36,11 +35,7 @@ class MainActivity : AppCompatActivity(), MainActivityContract.View {
         this.mPresenter = MainActivityPresenter(this)
         this.mPresenter.init()
 
-        //
-        // do any thing needed here
-        //
-
-        this.mPresenter.created()
+        this.mPresenter.getTvChannelList()
     }
 
     override fun onResume() {
@@ -53,11 +48,11 @@ class MainActivity : AppCompatActivity(), MainActivityContract.View {
         super.onPause()
     }
 
-    override fun bindData() {
+    override fun bindData(chList: ArrayList<TvChannel>) {
         gvChannelList.adapter = ArrayAdapter(
             this,
             android.R.layout.simple_list_item_1,
-            TvChannelListDB.channelList
+            chList
         )
     }
 
@@ -76,6 +71,14 @@ class MainActivity : AppCompatActivity(), MainActivityContract.View {
 
     override fun noConnectedDevice() {
         showIntroductoryOverlay()
+    }
+
+    override fun onCastResult(isSuccess: Boolean, tvChannel: TvChannel) {
+        if (isSuccess) {
+            Toast.makeText(this, "Now Playing: $tvChannel", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(this, "Cast Error: $tvChannel", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private var mediaRouteMenuItem: MenuItem? = null
@@ -98,12 +101,13 @@ class MainActivity : AppCompatActivity(), MainActivityContract.View {
             mIntroductoryOverlay = IntroductoryOverlay.Builder(
                 this, mediaRouteMenuItem
             )
-                .setTitleText(getString(R.string.no_device_error))
+                .setTitleText(getString(R.string.info_connect_to_cast_device))
                 .setOnOverlayDismissedListener { mIntroductoryOverlay = null }
                 .build()
             mIntroductoryOverlay!!.show()
         } else {
-            Toast.makeText(this, "There is no near by cast device", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.error_no_nearby_device), Toast.LENGTH_SHORT)
+                .show()
         }
     }
 }

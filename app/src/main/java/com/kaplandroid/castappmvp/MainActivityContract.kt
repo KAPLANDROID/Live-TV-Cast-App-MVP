@@ -6,11 +6,13 @@ import com.kaplandroid.castappmvp.model.TvChannel
 interface MainActivityContract {
 
     interface View {
-        fun bindData()
+        fun bindData(chList: ArrayList<TvChannel>)
 
         fun initClickListeners()
 
         fun noConnectedDevice()
+
+        fun onCastResult(isSuccess: Boolean, tvChannel: TvChannel)
 
     }
 
@@ -18,7 +20,7 @@ interface MainActivityContract {
 
         fun init()
 
-        fun created()
+        fun getTvChannelList()
 
         fun onChannelSelected(ch: TvChannel)
 
