@@ -24,6 +24,8 @@ class CastManager(context: Context, private val castManagerContract: CastManager
     private var mCastSession: CastSession? = null
     private var mSessionManager: SessionManager
 
+    private var lastChannelIndex: Int = 0
+
     private val mSessionManagerListener = SessionManagerListenerImpl()
 
     init {
@@ -76,10 +78,8 @@ class CastManager(context: Context, private val castManagerContract: CastManager
         mCastSession = null
     }
 
-    var lastIndex: Int = 0
-
     fun selectChannel(ch: TvChannel) {
-        lastIndex = TvChannelListDB.channelList.indexOf(ch)
+        lastChannelIndex = TvChannelListDB.channelList.indexOf(ch)
         Thread(Runnable {
             TvChannelListDB.updateTokens()
             Handler(Looper.getMainLooper()).post { startCast(ch) }
@@ -87,18 +87,18 @@ class CastManager(context: Context, private val castManagerContract: CastManager
     }
 
     fun previousChannel() {
-        lastIndex = if (lastIndex > 0) lastIndex - 1 else TvChannelListDB.channelList.size - 1
+        lastChannelIndex = if (lastChannelIndex > 0) lastChannelIndex - 1 else TvChannelListDB.channelList.size - 1
         Thread {
             TvChannelListDB.updateTokens()
-            Handler(Looper.getMainLooper()).post { startCast(TvChannelListDB.channelList[lastIndex]) }
+            Handler(Looper.getMainLooper()).post { startCast(TvChannelListDB.channelList[lastChannelIndex]) }
         }.start()
     }
 
     fun nextChannel() {
-        lastIndex = if (lastIndex < TvChannelListDB.channelList.size - 1) lastIndex + 1 else 0
+        lastChannelIndex = if (lastChannelIndex < TvChannelListDB.channelList.size - 1) lastChannelIndex + 1 else 0
         Thread {
             TvChannelListDB.updateTokens()
-            Handler(Looper.getMainLooper()).post { startCast(TvChannelListDB.channelList[lastIndex]) }
+            Handler(Looper.getMainLooper()).post { startCast(TvChannelListDB.channelList[lastChannelIndex]) }
         }.start()
     }
 

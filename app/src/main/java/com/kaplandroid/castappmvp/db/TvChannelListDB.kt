@@ -13,7 +13,17 @@ object TvChannelListDB {
 
     var channelList = arrayListOf(
         TvChannel("Kafa Radyo", "kafaradyo", "http://46.20.3.245/stream/510/"),
-        TvChannel("Trt 1", "trt1"),
+        TvChannel("Trt 1-", "trt1",
+
+
+
+            "https://hdtvler1.etvserver.com/live_sd/trt1/chunks.m3u8?nimblesessionid=5757372&wmsAuthSign=c2VydmVyX3RpbWU9OS83LzIwMTkgODowNjoyMiBQTSZoYXNoX3ZhbHVlPVVxVnE1NTBiWGxFeDJPN0owSmROYkE9PSZ2YWxpZG1pbnV0ZXM9NQ=="
+
+        ),
+
+
+
+
         TvChannel(
             "Kanal D",
             "kanald",
@@ -31,8 +41,8 @@ object TvChannelListDB {
         TvChannel(
             "ATV",
             "atv",
-            "https://blutv-beta.akamaized.net/atvhd/atvhd.smil/playlist.m3u8"
-//            "https://trkvz-m.ercdn.net/trkvz-temp/atvhdm.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9NS8xMi8yMDE4IDEwOjExOjA2IFBNJmhhc2hfdmFsdWU9cGtzUElvZjBwOUFIcDZRenpxQmxLdz09JnZhbGlkbWludXRlcz01"
+//            "https://blutv-beta.akamaized.net/atvhd/atvhd.smil/playlist.m3u8"
+            "https://trkvz-m.ercdn.net/trkvz-temp/atvhdm.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9NS8xMi8yMDE4IDEwOjExOjA2IFBNJmhhc2hfdmFsdWU9cGtzUElvZjBwOUFIcDZRenpxQmxLdz09JnZhbGlkbWludXRlcz01"
         ),
         TvChannel("DMAX Türkiye", "ntvspor"),
         TvChannel(
@@ -94,7 +104,7 @@ object TvChannelListDB {
         // 30 minutes cache for token (in milli seconds: 30 * 60 * 1000)
         if (System.currentTimeMillis() - lastUpdateTime > 30 * 60 * 1000) {
             val tokenRefreshUrl =
-                "http://web.canlitvlive.io/tvizle.php?tv=ntv-spor-izle"
+                "http://web.canlitvlive.io/tvizle.php?tv=cnnturk"
 
             val client = OkHttpClient()
 
@@ -105,6 +115,8 @@ object TvChannelListDB {
             try {
                 val response = client.newCall(request).execute()
                 val res = response.body()?.string()
+
+                Log.e("res: ",res)
 
                 res?.let {
                     token = it.split("tkn=")[1].split("&tms=")[0]
