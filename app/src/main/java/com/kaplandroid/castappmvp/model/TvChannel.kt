@@ -5,7 +5,7 @@ import com.kaplandroid.castappmvp.db.TvChannelListDB
 
 class TvChannel(val name: String, private val keyword: String) {
 
-    private var customLink: String? = null
+    internal var customLink: String? = null
 
     constructor(name: String, keyword: String, customLink: String) : this(name, keyword) {
         this.customLink = customLink
